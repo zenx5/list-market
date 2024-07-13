@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import ItemMarket from "./ItemMarket"
+import { priceToString } from "../tools/format"
 
 export default function ListMarket({ items, symbol }:{ items:Item[], symbol:string }) {
     const [ quantity, setQuantity] = useState<number[]>([])
     useEffect(()=>{
-        if( items.length > 0 ) setQuantity( Array(items.length).fill(0) )
-    },[items])
+        if( items.length > quantity.length ) setQuantity( Array(items.length).fill(0) )
+    },[items.length, quantity.length])
 
     const handlerChangeQuantity = (index:number) => (value:number) => {
         if( value < 0 ) return;
@@ -13,7 +14,7 @@ export default function ListMarket({ items, symbol }:{ items:Item[], symbol:stri
     }
 
     const getTotal = () => {
-        return items.reduce( (acc, item, index) => acc+item.price*quantity[index], 0)
+        return priceToString( items.reduce( (acc, item, index) => acc+item.price*quantity[index], 0), symbol )
     }
 
     return <table className="w-full">
@@ -36,8 +37,7 @@ export default function ListMarket({ items, symbol }:{ items:Item[], symbol:stri
                         onChangeQuantity={handlerChangeQuantity(index)}
                     /> ) }
             {items.length>0 && <tr>
-                <td className="py-3"></td>
-                <th className="py-3 text-lg">Total</th>
+                <th className="py-3 text-lg" colSpan={2}>Total</th>
                 <td className="py-3 text-lg font-bold">{ getTotal() }</td>
             </tr>}
         </tbody>
